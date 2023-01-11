@@ -12,7 +12,7 @@ expected_code = 200
 
 def test_microservice(url: str, expected_status_code: int):
     retries = 0
-    max_retries = 30
+    max_retries = 3
     while True:
         try:
             response = requests.get(url)
