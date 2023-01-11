@@ -1,0 +1,31 @@
+---
+
+name: Build and Test
+
+on:
+  push:
+    branches:
+    - dev # FIXME
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    parallelism: 3
+    strategy:
+      matrix:
+        include:
+          - workdir: microservice_a
+          - workdir: microservice_b
+          - workdir: microservice_c
+    permissions:
+      contents: read
+      packages: write
+
+    steps:
+      - name: "build ${{matrix.workdir}}"
+        working-directory: "${{matrix.workdir}}"
+        run: |
+          ls -lha
+          pwd
+          hostname -f
+          uptime
