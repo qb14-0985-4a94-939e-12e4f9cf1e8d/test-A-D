@@ -44,26 +44,20 @@ jobs:
         working-directory: "${{matrix.workdir}}"
         run: sleep 20s && docker logs ${{matrix.workdir}}__${{github.sha}}
 
-          # __CONTAINER_JSON=$(docker inspect $__CONTAINER_ID)
-          # __CONTAINER_PORT=$(echo $__CONTAINER_JSON | jq '.[0].NetworkSettings.Ports["5000/tcp"][0].HostPort')
-          # echo "${{matrix.workdir}} container is listening on $__CONTAINER_PORT"
-
-        # tests
-      - name: prep for testing
+      - name: tests
         working-directory: "${{matrix.workdir}}"
         run: |
           docker cp ./test.py ${{matrix.workdir}}__${{github.sha}}:/tmp/
           docker run -it ${{matrix.workdir}}__${{github.sha}} pipenv install --dev
           docker run -it ${{matrix.workdir}}__${{github.sha}} pipenv run test $__CONTAINER_PORT -vv
 
-      # - name: Log into registry ${{ env.REGISTRY }}
-      #   uses: docker/login-action@28218f9b04b4f3f62068d7b6ce6ca5b26e35336c
-      #   if: steps.test.outputs.test_passed == 'true'
-      #   with:
-      #     registry: ${{ env.REGISTRY }}
-      #     username: ${{ github.actor }}
-      #     password: ${{ secrets.GITHUB_TOKEN }}
-      # - name: "pushing ${{matrix.workdir}} image"
-      #   working-directory: "${{matrix.workdir}}"
-      #   run: "echo ${{github.sha}}"
-      #
+      - name: Log into registry ${{ env.REGISTRY }}
+        uses: docker/login-action@28218f9b04b4f3f62068d7b6ce6ca5b26e35336c
+        # if: steps.test.outputs.test_passed == 'true'
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - name: "pushing ${{matrix.workdir}} image"
+        working-directory: "${{matrix.workdir}}"
+        run: "echo ${{github.sha}}"
