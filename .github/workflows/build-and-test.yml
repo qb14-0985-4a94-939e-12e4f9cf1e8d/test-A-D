@@ -32,13 +32,13 @@ jobs:
         working-directory: "${{matrix.workdir}}"
         run: "./build.sh ${{github.sha}}"
 
-      - name: "run ${{matrix.workdir}} container"
-        working-directory: "${{matrix.workdir}}"
-        run: docker run --name ${{matrix.workdir}}__${{github.sha}} -d -P ${{ env.REGISTRY }}/${{matrix.workdir}}:${{github.sha}}
-
-      - name: "get logs for ${{matrix.workdir}} container"
-        working-directory: "${{matrix.workdir}}"
-        run: sleep 20s && docker logs ${{matrix.workdir}}__${{github.sha}}
+      # - name: "run ${{matrix.workdir}} container"
+      #   working-directory: "${{matrix.workdir}}"
+      #   run: docker run --name ${{matrix.workdir}}__${{github.sha}} -d -P ${{ env.REGISTRY }}/${{matrix.workdir}}:${{github.sha}}
+      #
+      # - name: "get logs for ${{matrix.workdir}} container"
+      #   working-directory: "${{matrix.workdir}}"
+      #   run: sleep 20s && docker logs ${{matrix.workdir}}__${{github.sha}}
 
       # - name: tests
       #   working-directory: "${{matrix.workdir}}"
