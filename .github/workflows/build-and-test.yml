@@ -38,14 +38,11 @@ jobs:
 
       - name: "run ${{matrix.workdir}} container"
         working-directory: "${{matrix.workdir}}"
-        run: |
-          export __CONTAINER_NAME=$(uuidgen)
-          # export __CONTAINER_ID=$( docker run -d -P ${{matrix.workdir}}:${{github.sha}} )
+        run: docker run --name ${{matrix.workdir}}__${{github.sha}} -d -P ${{matrix.workdir}}:${{github.sha}}
 
       - name: "get logs for ${{matrix.workdir}} container"
         working-directory: "${{matrix.workdir}}"
-        run: echo $__CONTAINER_NAME
-        # run: docker logs $__CONTAINER_ID
+        run: docker logs ${{matrix.workdir}}__${{github.sha}}
 
           # __CONTAINER_JSON=$(docker inspect $__CONTAINER_ID)
           # __CONTAINER_PORT=$(echo $__CONTAINER_JSON | jq '.[0].NetworkSettings.Ports["5000/tcp"][0].HostPort')
@@ -54,10 +51,10 @@ jobs:
         # tests
       - name: prep for testing
         run: |
-          docker cp ./test.py $__CONTAINER_ID:/tmp/
-          docker run -it $__CONTAINER_ID pipenv install --dev
+          docker cp ./test.py ${{matrix.workdir}}__${{github.sha}}:/tmp/
+          docker run -it ${{matrix.workdir}}__${{github.sha}} pipenv install --dev
       - name: exec test
-        run: docker run -it $__CONTAINER_ID pipenv run test $__CONTAINER_PORT -vv
+        run: docker run -it ${{matrix.workdir}}__${{github.sha}} pipenv run test $__CONTAINER_PORT -vv
 
       # - name: Log into registry ${{ env.REGISTRY }}
       #   uses: docker/login-action@28218f9b04b4f3f62068d7b6ce6ca5b26e35336c
