@@ -60,4 +60,4 @@ jobs:
           password: ${{ secrets.GITHUB_TOKEN }}
       - name: "pushing ${{matrix.workdir}} image"
         working-directory: "${{matrix.workdir}}"
-        run: "echo ${{github.sha}}"
+        run: docker push ${{ env.REGISTRY }}/${{matrix.workdir}}:${{github.sha}}
