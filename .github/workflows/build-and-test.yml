@@ -26,4 +26,4 @@ jobs:
 
       - name: "build ${{matrix.workdir}} image"
         working-directory: "${{matrix.workdir}}"
-        run: "./build.sh"
+        run: "./build.sh ${{github.sha}}"
