@@ -41,33 +41,56 @@ jobs:
           -P
           ${{ env.IMAGE_PREFIX }}/${{matrix.workdir}}:${{github.sha}}
 
-      # - name: "get logs for ${{matrix.workdir}} container"
-      #   working-directory: "${{matrix.workdir}}"
-      #   run: sleep 20s && docker logs ${{matrix.workdir}}__${{github.sha}}
-
-      - name: cache | pip
+      - name: "cache | pip"
         uses: actions/cache@v2
         with:
           path: ~/.cache/pip
           key: ${{ runner.os }}-pip
           restore-keys: |
             ${{ runner.os }}-pip-
-      - name: do test
+      - name: "test | deps"
         working-directory: "${{matrix.workdir}}"
         run: |
           python -m pip install --upgrade pip
           pip install pipenv
           pipenv install --dev
           pipenv run python test.py --port=3233
+      - name: "test | check if container is ready"
+        working-directory: "${{matrix.workdir}}"
+        run: |
+          __RETRY=10
+          for i in $(seq 1 $__RETRY); do
+              __CONTAINER_JSON=$(docker inspect ${{matrix.workdir}}__${{github.sha}})
+              __CONTAINER_READINESS=$(echo $container_json | jq '.[0].State.Health.Status')
+              if [[ $readiness_status == healthy ]]; then
+                  __CONTAINER_PORT=$(echo $__CONTAINER_JSON | jq '.[0].NetworkSettings.Ports["5000/tcp"][0].HostPort')
+                  echo "Container is ready, listening on $__CONTAINER_PORT"
+                  exit 0
+              else
+                  echo "Container is not ready yet, retrying in 10 seconds..."
+              fi
+              sleep 10s
+          done
+          echo "Error: Container failed to become ready after $retries retries"
+          exit 1
 
-      - name: log into registry
+      - name: "test | exec"
+        working-directory: "${{matrix.workdir}}"
+        run: |
+          pipenv run python test.py --port=$__CONTAINER_PORT
+
+      - name: "debug: get logs for ${{matrix.workdir}} container"
+        run: docker logs ${{matrix.workdir}}__${{github.sha}}
+        if: failure()
+
+      - name: "push | login"
         uses: docker/login-action@28218f9b04b4f3f62068d7b6ce6ca5b26e35336c
         with:
           registry: ${{ env.REGISTRY }}
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: "pushing ${{matrix.workdir}} image"
+      - name: "push | ${{matrix.workdir}} image"
         working-directory: "${{matrix.workdir}}"
         run: >-
          docker push
