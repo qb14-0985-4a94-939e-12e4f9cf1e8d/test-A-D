@@ -8,7 +8,7 @@ on:
   pull_request:
     branches: [ "main" ]
 env:
-  IMAGE_PREFIX: "ghcr.io/${{ github.repository }}
+  IMAGE_PREFIX: "ghcr.io/${{ github.repository }}"
 
 jobs:
   build-test-push:
