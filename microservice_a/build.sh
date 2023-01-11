@@ -13,8 +13,8 @@ echo "tag is $1"
 
 docker build \
   --file Dockerfile \
-  -t "ghcr.io/${__SVC}:${1}" \
-  -t "ghcr.io/${__SVC}:latest" \
+  -t "ghcr.io/qb14-0985-4a94-939e-12e4f9cf1e8d/test-a-d/${__SVC}:${1}" \
+  -t "ghcr.io/qb14-0985-4a94-939e-12e4f9cf1e8d/test-a-d/${__SVC}:latest" \
   -t "${__SVC}:${1}" \
   -t "${__SVC}:latest" \
   .
