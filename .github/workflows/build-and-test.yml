@@ -80,7 +80,7 @@ jobs:
           pipenv install --dev
       - name: "test | exec python-requests"
         working-directory: "${{matrix.workdir}}"
-        run: pipenv run python test.py --port="\"$__CONTAINER_PORT\""
+        run: "pipenv run python test.py --port=${{ env.__CONTAINER_PORT }}"
 
       - name: "debug: get info for ${{matrix.workdir}} container"
         if: failure()
