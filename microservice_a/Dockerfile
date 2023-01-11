@@ -17,7 +17,7 @@ COPY --chown=worker:worker main.py /app/
 
 EXPOSE 5000
 
-HEALTHCHECK --interval=30s --timeout=3s \
-  CMD nc -z -v localhost:5000 || exit 1
+HEALTHCHECK --interval=90s --timeout=5s \
+  CMD nc -z -v 127.0.0.1 5000
 
 CMD ["pipenv", "run", "server"]
