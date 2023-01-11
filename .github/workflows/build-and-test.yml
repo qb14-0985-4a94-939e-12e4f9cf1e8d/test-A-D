@@ -61,7 +61,7 @@ jobs:
           python -m pip install --upgrade pip
           pip install pipenv
       - name: deps | pipenv install
-        run: pipenv install
+        run: pipenv install --dev
       - name: test it
         run: pipenv run test $__CONTAINER_PORT -vv
 
