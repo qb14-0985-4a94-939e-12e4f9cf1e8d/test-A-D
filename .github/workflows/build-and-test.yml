@@ -42,7 +42,7 @@ jobs:
 
       - name: "get logs for ${{matrix.workdir}} container"
         working-directory: "${{matrix.workdir}}"
-        run: docker logs ${{matrix.workdir}}__${{github.sha}}
+        run: sleep 20s && docker logs ${{matrix.workdir}}__${{github.sha}}
 
           # __CONTAINER_JSON=$(docker inspect $__CONTAINER_ID)
           # __CONTAINER_PORT=$(echo $__CONTAINER_JSON | jq '.[0].NetworkSettings.Ports["5000/tcp"][0].HostPort')
@@ -54,8 +54,7 @@ jobs:
         run: |
           docker cp ./test.py ${{matrix.workdir}}__${{github.sha}}:/tmp/
           docker run -it ${{matrix.workdir}}__${{github.sha}} pipenv install --dev
-      - name: exec test
-        run: docker run -it ${{matrix.workdir}}__${{github.sha}} pipenv run test $__CONTAINER_PORT -vv
+          docker run -it ${{matrix.workdir}}__${{github.sha}} pipenv run test $__CONTAINER_PORT -vv
 
       # - name: Log into registry ${{ env.REGISTRY }}
       #   uses: docker/login-action@28218f9b04b4f3f62068d7b6ce6ca5b26e35336c
