@@ -1,8 +1,8 @@
 FROM python:3.10-alpine
 
-RUN pip install pipenv && \
-    apk add nc && \
-    adduser -D worker
+RUN apk add --update --no-cache netcat-openbsd \
+    && pip install pipenv \
+    && adduser -D worker
 
 WORKDIR /app
 USER worker
