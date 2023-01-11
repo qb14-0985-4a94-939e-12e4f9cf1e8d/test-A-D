@@ -45,14 +45,13 @@ jobs:
       #   working-directory: "${{matrix.workdir}}"
       #   run: sleep 20s && docker logs ${{matrix.workdir}}__${{github.sha}}
 
-      # - name: tests
-      #   working-directory: "${{matrix.workdir}}"
-      #   run: |
-      #     docker cp ./test.py ${{matrix.workdir}}__${{github.sha}}:/tmp/
-      #     docker run -it ${{matrix.workdir}}__${{github.sha}} pipenv install --dev
-      #     docker run -it ${{matrix.workdir}}__${{github.sha}} pipenv run test $__CONTAINER_PORT -vv
+      - name: tests
+        working-directory: "${{matrix.workdir}}"
+        run: |
+          pipenv install --dev
+          pipenv run python test.py --port=3233
 
-      - name: Log into registry ${{ env.REGISTRY }}
+      - name: log into registry
         uses: docker/login-action@28218f9b04b4f3f62068d7b6ce6ca5b26e35336c
         with:
           registry: ${{ env.REGISTRY }}
