@@ -12,7 +12,7 @@ env:
   IMAGE_NAME: ${{ github.repository }}
 
 jobs:
-  build:
+  build-test-push:
     runs-on: ubuntu-latest
     strategy:
       matrix:
@@ -36,49 +36,22 @@ jobs:
         working-directory: "${{matrix.workdir}}"
         run: "./build.sh ${{github.sha}}"
 
-  test:
-    needs: build
-    runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        include:
-          - workdir: microservice_a
-          - workdir: microservice_b
-          - workdir: microservice_c
-    permissions:
-      contents: read
-      packages: write
-    steps:
-      - name: checkout
-        uses: actions/checkout@v3
-      - name: "build ${{matrix.workdir}} image"
+      - name: "run ${{matrix.workdir}} image"
         working-directory: "${{matrix.workdir}}"
-        run: "echo ${{github.sha}}"
+        run: |
+          __CONTAINER_ID=$( docker run -d -P ${{matrix.workdir}}:${{github.sha}} )
+          __CONTAINER_JSON=$(docker inspect $__CONTAINER_ID)
+          __CONTAINER_PORT=$(echo $__CONTAINER_JSON | jq '.[0].NetworkSettings.Ports["5000/tcp"][0].HostPort')
+          echo "container is listening on $__CONTAINER_PORT"
 
-  push:
-    needs: test
-    runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        include:
-          - workdir: microservice_a
-          - workdir: microservice_b
-          - workdir: microservice_c
-    permissions:
-      contents: read
-      packages: write
-    steps:
-      - name: checkout
-        uses: actions/checkout@v3
-        if: steps.test.outputs.test_passed == 'true'
-      - name: Log into registry ${{ env.REGISTRY }}
-        uses: docker/login-action@28218f9b04b4f3f62068d7b6ce6ca5b26e35336c
-        if: steps.test.outputs.test_passed == 'true'
-        with:
-          registry: ${{ env.REGISTRY }}
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
-      - name: "pushing ${{matrix.workdir}} image"
-        working-directory: "${{matrix.workdir}}"
-        run: "echo ${{github.sha}}"
-
+      # - name: Log into registry ${{ env.REGISTRY }}
+      #   uses: docker/login-action@28218f9b04b4f3f62068d7b6ce6ca5b26e35336c
+      #   if: steps.test.outputs.test_passed == 'true'
+      #   with:
+      #     registry: ${{ env.REGISTRY }}
+      #     username: ${{ github.actor }}
+      #     password: ${{ secrets.GITHUB_TOKEN }}
+      # - name: "pushing ${{matrix.workdir}} image"
+      #   working-directory: "${{matrix.workdir}}"
+      #   run: "echo ${{github.sha}}"
+      #
