@@ -50,6 +50,7 @@ jobs:
 
         # tests
       - name: prep for testing
+        working-directory: "${{matrix.workdir}}"
         run: |
           docker cp ./test.py ${{matrix.workdir}}__${{github.sha}}:/tmp/
           docker run -it ${{matrix.workdir}}__${{github.sha}} pipenv install --dev
