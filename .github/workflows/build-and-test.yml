@@ -61,7 +61,7 @@ jobs:
           for i in $(seq 1 $__RETRY); do
               __CONTAINER_JSON=$(docker inspect ${{matrix.workdir}}__${{github.sha}})
               __CONTAINER_READINESS=$(echo $container_json | jq '.[0].State.Health.Status')
-              if [[ $readiness_status == healthy ]]; then
+              if [[ $readiness_status == "\"healthy\"" ]]; then
                   __CONTAINER_PORT=$(echo $__CONTAINER_JSON | jq '.[0].NetworkSettings.Ports["5000/tcp"][0].HostPort')
                   echo "Container is ready, listening on $__CONTAINER_PORT"
                   exit 0
