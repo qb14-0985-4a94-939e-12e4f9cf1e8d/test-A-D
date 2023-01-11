@@ -1,8 +1,6 @@
 #!/bin/bash
 
-# for sure it would be better
-# https://docs.docker.com/build/cache/backends/gha/
-# but okay
+set -xe
 
 __SVC=$( echo "$PWD" | awk -F '/' '{print $NF}')
 
@@ -18,5 +16,3 @@ docker build \
   -t "${__SVC}:${1}" \
   -t "${__SVC}:latest" \
   .
-
-docker images

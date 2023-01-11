@@ -20,9 +20,9 @@ jobs:
           - workdir: microservice_a
           - workdir: microservice_b
           - workdir: microservice_c
-    # permissions: we don't use cache
-    #   contents: read
-    #   packages: write
+    permissions:
+      contents: read
+      packages: write
     steps:
       - name: checkout
         uses: actions/checkout@v3
@@ -31,7 +31,8 @@ jobs:
         working-directory: "${{matrix.workdir}}"
         run: "./build.sh ${{github.sha}}"
 
-  push:
+  test:
+    needs: build
     runs-on: ubuntu-latest
     strategy:
       matrix:
@@ -45,10 +46,34 @@ jobs:
     steps:
       - name: checkout
         uses: actions/checkout@v3
+      - name: "build ${{matrix.workdir}} image"
+        working-directory: "${{matrix.workdir}}"
+        run: "echo ${{github.sha}}"
+
+  push:
+    needs: test
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        include:
+          - workdir: microservice_a
+          - workdir: microservice_b
+          - workdir: microservice_c
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - name: checkout
+        uses: actions/checkout@v3
+        if: steps.test.outputs.test_passed == 'true'
       - name: Log into registry ${{ env.REGISTRY }}
         uses: docker/login-action@28218f9b04b4f3f62068d7b6ce6ca5b26e35336c
+        if: steps.test.outputs.test_passed == 'true'
         with:
           registry: ${{ env.REGISTRY }}
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
+      - name: "pushing ${{matrix.workdir}} image"
+        working-directory: "${{matrix.workdir}}"
+        run: "echo ${{github.sha}}"
 
