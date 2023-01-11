@@ -54,7 +54,6 @@ jobs:
           python -m pip install --upgrade pip
           pip install pipenv
           pipenv install --dev
-          pipenv run python test.py --port=3233
       - name: "test | check if container is ready"
         working-directory: "${{matrix.workdir}}"
         run: |
@@ -76,12 +75,16 @@ jobs:
 
       - name: "test | exec"
         working-directory: "${{matrix.workdir}}"
-        run: |
-          pipenv run python test.py --port=$__CONTAINER_PORT
+        run: >-
+          pipenv run
+          python  test.py
+          --port=$__CONTAINER_PORT
 
-      - name: "debug: get logs for ${{matrix.workdir}} container"
-        run: docker logs ${{matrix.workdir}}__${{github.sha}}
+      - name: "debug: get info for ${{matrix.workdir}} container"
         if: failure()
+        run: |
+          docker logs ${{matrix.workdir}}__${{github.sha}}
+          docker inspect ${{matrix.workdir}}__${{github.sha}}
 
       - name: "push | login"
         uses: docker/login-action@28218f9b04b4f3f62068d7b6ce6ca5b26e35336c
