@@ -8,7 +8,7 @@ WORKDIR /app
 USER worker
 
 # install deps
-COPY --chown=worker:worker Pipfile Pipfile.lock /app/
+COPY --link --chown=worker:worker Pipfile Pipfile.lock /app/
 RUN whoami && \
   pipenv install
 
