@@ -30,6 +30,10 @@ jobs:
 
       - name: "build ${{matrix.workdir}} image"
         working-directory: "${{matrix.workdir}}"
+        run: ls -lha
+
+      - name: "build ${{matrix.workdir}} image"
+        working-directory: "${{matrix.workdir}}"
         run: "./build.sh ${{github.sha}}"
 
   test:
