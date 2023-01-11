@@ -1,14 +1,19 @@
-FROM python:3.10-slim
+FROM python:3.10-alpine
 
-RUN pip install pipenv
+RUN pip install pipenv && \
+    adduser -D worker
 
 WORKDIR /app
+USER worker
 
-COPY Pipfile Pipfile.lock /app
-RUN pipenv install --system --deploy
+# install deps
+COPY --chown=worker:worker Pipfile Pipfile.lock /app/
+RUN whoami && \
+  pipenv install
 
-COPY main.py /app
+# copy app
+COPY --chown=worker:worker main.py /app/
 
 EXPOSE 5000
 
-CMD ["pipenv", "run", "python", "main.py"]
+CMD ["pipenv", "run", "server"]
