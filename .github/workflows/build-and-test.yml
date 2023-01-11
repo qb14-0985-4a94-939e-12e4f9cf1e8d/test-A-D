@@ -48,16 +48,11 @@ jobs:
           key: ${{ runner.os }}-pip
           restore-keys: |
             ${{ runner.os }}-pip-
-      - name: "test | deps"
+
+      - name: "test | docker healthcheck"
         working-directory: "${{matrix.workdir}}"
         run: |
-          python -m pip install --upgrade pip
-          pip install pipenv
-          pipenv install --dev
-      - name: "test | check if container is ready"
-        working-directory: "${{matrix.workdir}}"
-        run: |
-          __RETRY=10
+          __RETRY=100
           for i in $(seq 1 $__RETRY); do
               __CONTAINER_JSON=$(docker inspect ${{matrix.workdir}}__${{github.sha}})
               __CONTAINER_READINESS=$(echo $__CONTAINER_JSON | jq '.[0].State.Health.Status')
@@ -77,11 +72,17 @@ jobs:
           echo "Error: Container failed to become ready after $retries retries"
           exit 1
 
+      - name: "test | deps"
+        working-directory: "${{matrix.workdir}}"
+        run: |
+          python -m pip install --upgrade pip
+          pip install pipenv
+          pipenv install --dev
       - name: "test | exec"
         working-directory: "${{matrix.workdir}}"
         run: echo $__CONTAINER_PORT
 
-      - name: "test | exec"
+      - name: "test | python-requests"
         working-directory: "${{matrix.workdir}}"
         run: >-
           pipenv run
