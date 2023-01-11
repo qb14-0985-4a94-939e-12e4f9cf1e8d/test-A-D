@@ -15,4 +15,6 @@ docker build \
   --file Dockerfile \
   -t "ghcr.io/${__SVC}:${1}" \
   -t "ghcr.io/${__SVC}:latest" \
+  -t "${__SVC}:${1}" \
+  -t "${__SVC}:latest" \
   .

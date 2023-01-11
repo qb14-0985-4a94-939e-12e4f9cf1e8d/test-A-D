@@ -50,6 +50,7 @@ jobs:
       #     docker cp ./test.py ${{matrix.workdir}}__${{github.sha}}:/tmp/
       #     docker run -it ${{matrix.workdir}}__${{github.sha}} pipenv install --dev
       #     docker run -it ${{matrix.workdir}}__${{github.sha}} pipenv run test $__CONTAINER_PORT -vv
+
       - name: Log into registry ${{ env.REGISTRY }}
         uses: docker/login-action@28218f9b04b4f3f62068d7b6ce6ca5b26e35336c
         with:
@@ -59,4 +60,4 @@ jobs:
 
       - name: "pushing ${{matrix.workdir}} image"
         working-directory: "${{matrix.workdir}}"
-        run: docker push ${{ env.REGISTRY }}/qb14-0985-4a94-939e-12e4f9cf1e8d/${{matrix.workdir}}:${{github.sha}}
+        run: docker push ${{ env.REGISTRY }}/qb14-0985-4a94-939e-12e4f9cf1e8d/test-a-d/${{matrix.workdir}}:${{github.sha}}
