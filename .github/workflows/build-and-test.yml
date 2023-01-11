@@ -34,7 +34,7 @@ jobs:
 
       - name: "run ${{matrix.workdir}} container"
         working-directory: "${{matrix.workdir}}"
-        run: |
+        run: >-
           docker run
           --name ${{matrix.workdir}}__${{github.sha}}
           -d
