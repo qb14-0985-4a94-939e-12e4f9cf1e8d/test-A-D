@@ -67,6 +67,7 @@ jobs:
               if [[ $__CONTAINER_READINESS == "\"healthy\"" ]]; then
                   __CONTAINER_PORT=$(echo $__CONTAINER_JSON | jq '.[0].NetworkSettings.Ports["5000/tcp"][0].HostPort')
                   echo "Container is ready, listening on $__CONTAINER_PORT"
+                  export __CONTAINER_PORT
                   exit 0
               else
                   echo "Container status is $__CONTAINER_READINESS , retrying in 10 seconds..."
@@ -75,6 +76,10 @@ jobs:
           done
           echo "Error: Container failed to become ready after $retries retries"
           exit 1
+
+      - name: "test | exec"
+        working-directory: "${{matrix.workdir}}"
+        run: echo $__CONTAINER_PORT
 
       - name: "test | exec"
         working-directory: "${{matrix.workdir}}"
