@@ -10,7 +10,7 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-    strategy: &strategy
+    strategy:
       matrix:
         include:
           - workdir: microservice_a
@@ -29,7 +29,12 @@ jobs:
 
   push:
     runs-on: ubuntu-latest
-    strategy: *strategy
+    strategy:
+      matrix:
+        include:
+          - workdir: microservice_a
+          - workdir: microservice_b
+          - workdir: microservice_c
     permissions:
       contents: read
       packages: write
