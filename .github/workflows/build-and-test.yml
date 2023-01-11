@@ -9,6 +9,7 @@ on:
     branches: [ "main" ]
 env:
   IMAGE_PREFIX: "ghcr.io/${{ github.repository }}"
+  REGISTRY: 'ghcr.io'
 
 jobs:
   build-test-push:
