@@ -36,12 +36,16 @@ jobs:
         working-directory: "${{matrix.workdir}}"
         run: "./build.sh ${{github.sha}}"
 
-      - name: "run ${{matrix.workdir}} image"
+      - name: "run ${{matrix.workdir}} container"
         working-directory: "${{matrix.workdir}}"
-        run: export __CONTAINER_ID=$( docker run -d -P ${{matrix.workdir}}:${{github.sha}} )
+        run: |
+          export __CONTAINER_NAME=$(uuidgen)
+          # export __CONTAINER_ID=$( docker run -d -P ${{matrix.workdir}}:${{github.sha}} )
+
       - name: "get logs for ${{matrix.workdir}} container"
         working-directory: "${{matrix.workdir}}"
-        run: docker logs $__CONTAINER_ID
+        run: echo $__CONTAINER_NAME
+        # run: docker logs $__CONTAINER_ID
 
           # __CONTAINER_JSON=$(docker inspect $__CONTAINER_ID)
           # __CONTAINER_PORT=$(echo $__CONTAINER_JSON | jq '.[0].NetworkSettings.Ports["5000/tcp"][0].HostPort')
