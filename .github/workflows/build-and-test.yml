@@ -47,12 +47,10 @@ jobs:
         # tests
       - name: test deps | python version
         uses: actions/setup-python@v1
-        working-directory: "${{matrix.workdir}}"
         with:
           python-version: '3.x'
       - name: test | cache | pip
         uses: actions/cache@v2
-        working-directory: "${{matrix.workdir}}"
         with:
           path: ~/.cache/pip
           key: ${{ runner.os }}-pip
