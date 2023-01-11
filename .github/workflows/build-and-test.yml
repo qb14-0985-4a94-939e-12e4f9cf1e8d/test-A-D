@@ -16,11 +16,11 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-      fail-fast: false
         include:
           - workdir: microservice_a
           - workdir: microservice_b
           - workdir: microservice_c
+      fail-fast: false
     permissions:
       contents: read
       packages: write
